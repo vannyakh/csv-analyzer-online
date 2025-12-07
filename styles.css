@@ -911,3 +911,44 @@ body {
     margin: 20px;
   }
 }
+
+/* AdSense Styles */
+.ads-container {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.ads-top {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.ads-in-content {
+  margin: 30px 20px;
+}
+
+.ads-bottom {
+  margin-top: 30px;
+  margin-bottom: 0;
+}
+
+.ads-container ins {
+  display: block;
+  text-align: center;
+}
+
+/* Responsive AdSense */
+@media (max-width: 768px) {
+  .ads-container {
+    margin: 15px 10px;
+    min-height: 50px;
+  }
+
+  .ads-in-content {
+    margin: 20px 10px;
+  }
+}
