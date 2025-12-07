@@ -30,3 +30,37 @@ A powerful, feature-rich web application for viewing, analyzing, and visualizing
 3. Use the toolbar to search, export, analyze, and visualize your data
 4. Click "Charts" to create visualizations from your data
 5. Click "Stats" to view detailed column statistics
+
+## Deployment
+
+This project is set up for automatic deployment to GitHub Pages.
+
+### Automatic Deployment
+
+1. Push your code to the `main` or `master` branch
+2. GitHub Actions will automatically build and deploy to GitHub Pages
+3. Your site will be available at `https://[username].github.io/[repository-name]/`
+
+### Manual Setup
+
+1. Go to your repository **Settings**
+2. Navigate to **Pages** in the left sidebar
+3. Under **Source**, select **GitHub Actions**
+4. The workflow will automatically deploy on every push to main/master branch
+
+### Local Development
+
+Simply open `index.html` in a web browser or use a local server:
+
+```bash
+# Using Python
+python -m http.server 8000
+
+# Using Node.js
+npx serve .
+
+# Using PHP
+php -S localhost:8000
+```
+
+Then visit `http://localhost:8000` in your browser.
