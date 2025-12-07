@@ -581,6 +581,33 @@ statsPanel.addEventListener('click', function(e) {
   }
 })
 
+// AdSense Configuration
+// Set this to true to enable ads after AdSense approval
+const ENABLE_ADS = false
+
+function initAds() {
+  if (ENABLE_ADS) {
+    const adContainers = document.querySelectorAll('.ads-container')
+    adContainers.forEach(container => {
+      container.style.display = 'flex'
+    })
+    
+    // Push ads to AdSense (if not already done)
+    if (typeof adsbygoogle !== 'undefined') {
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({})
+      } catch (e) {
+        console.log('AdSense not ready yet')
+      }
+    }
+  }
+}
+
+// Initialize ads on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initAds()
+})
+
 // Chart Analysis Functions
 function populateChartSelectors(data) {
   const headers = data.meta.fields || Object.keys(data.data[0] || {})
