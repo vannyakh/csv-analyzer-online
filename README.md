@@ -35,18 +35,37 @@ A powerful, feature-rich web application for viewing, analyzing, and visualizing
 
 This project is set up for automatic deployment to GitHub Pages.
 
+### ⚠️ Important: Enable GitHub Pages First
+
+**Before pushing code, you must enable GitHub Pages:**
+
+1. Go to your repository on GitHub
+2. Click on **Settings** (top menu)
+3. Scroll down to **Pages** in the left sidebar
+4. Under **Source**, select **GitHub Actions** (NOT "Deploy from a branch")
+5. Save the settings
+
 ### Automatic Deployment
 
-1. Push your code to the `main` or `master` branch
+Once Pages is enabled:
+
+1. Push your code to the `main` or `master` branch:
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
 2. GitHub Actions will automatically build and deploy to GitHub Pages
-3. Your site will be available at `https://[username].github.io/[repository-name]/`
+3. Check the **Actions** tab to see the deployment progress
+4. Your site will be available at `https://[username].github.io/[repository-name]/`
 
-### Manual Setup
+### Troubleshooting
 
-1. Go to your repository **Settings**
-2. Navigate to **Pages** in the left sidebar
-3. Under **Source**, select **GitHub Actions**
-4. The workflow will automatically deploy on every push to main/master branch
+If you see the error: "Get Pages site failed"
+- Make sure you've enabled GitHub Pages in Settings → Pages
+- Select **GitHub Actions** as the source (not "Deploy from a branch")
+- Wait a few minutes after enabling, then push your code again
 
 ### Local Development
 
