@@ -29,3 +29,6 @@ yarn-error.log*
 *.temp
 .cache/
 
+node_modules/
+dist/
+
