@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import '@/assets/styles/modal.css'
 
 export function ConfirmModal({
   open,

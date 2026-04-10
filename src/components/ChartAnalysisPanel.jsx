@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import '@/assets/styles/panels.css'
 import { buildEChartsOption } from '@/lib/chartConfig.js'
 import { useAppStore } from '@/store/useAppStore.js'
 

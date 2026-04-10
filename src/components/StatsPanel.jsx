@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import '@/assets/styles/panels.css'
 import { useAppStore } from '@/store/useAppStore.js'
 
 function StatNumbers({ numericData }) {

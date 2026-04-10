@@ -1,5 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Papa from 'papaparse'
+import '@/assets/styles/app.css'
 import { parseCsvText } from '@/lib/csvParse.js'
 import { parseJsonTable } from '@/lib/jsonTableParse.js'
 import { applyHandsontableSearch } from '@/lib/handsontableSearch.js'

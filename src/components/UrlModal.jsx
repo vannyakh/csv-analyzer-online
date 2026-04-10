@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import '@/assets/styles/modal.css'
 import { parseCsvText } from '@/lib/csvParse.js'
 import { parseJsonTable } from '@/lib/jsonTableParse.js'
 import { getRecentUrls, rememberUrl } from '@/lib/recentUrls.js'
