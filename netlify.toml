@@ -1,3 +1,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
+
+# SPA: serve index.html for client routes (404 page, deep links)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
