@@ -50,7 +50,7 @@ export function ChartAnalysisPanel({ hotRef, chartDomRef, chartInstanceRef }) {
 
   const handleGenerateChart = () => {
     if (!parsedData || !hotRef.current) {
-      showError('Please load a CSV file first.')
+      showError('Please load a data file first.')
       return
     }
     if (!xAxis || !yAxis) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { parseCsvText } from '../lib/csvParse.js'
+import { parseJsonTable } from '../lib/jsonTableParse.js'
 import { getRecentUrls, rememberUrl } from '../lib/recentUrls.js'
 import { useAppStore } from '../store/useAppStore.js'
 
@@ -31,14 +32,15 @@ export function UrlModal() {
     try {
       const response = await fetch(url)
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-      const csv = await response.text()
-      const data = parseCsvText(csv)
-      if (!data.data?.length) throw new Error('The CSV file appears to be empty or invalid.')
+      const text = await response.text()
+      const trimmed = text.trim()
+      const data = trimmed.startsWith('[') ? parseJsonTable(text) : parseCsvText(text)
+      if (!data.data?.length) throw new Error('The file appears to be empty or invalid.')
       rememberUrl(url)
       applyParsedDataSuccess(null, data)
       closeUrlModal()
     } catch (err) {
-      setUrlError(`Error loading CSV: ${err.message}`)
+      setUrlError(`Error loading file: ${err.message}`)
       setLoading(false)
     }
   }

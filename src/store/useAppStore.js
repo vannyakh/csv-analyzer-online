@@ -160,7 +160,7 @@ export const useAppStore = create(
   openChartPanel: () => {
     const parsedData = get().parsedData
     if (!parsedData) {
-      get().showError('Please load a CSV file first.')
+      get().showError('Please load a data file first.')
       return
     }
     const s = suggestChartColumns(parsedData)

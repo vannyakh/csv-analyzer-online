@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Handsontable from 'handsontable'
 import Papa from 'papaparse'
 import { parseCsvText } from './lib/csvParse.js'
+import { parseJsonTable } from './lib/jsonTableParse.js'
 import { applyHandsontableSearch } from './lib/handsontableSearch.js'
 import { handsontableCells } from './lib/handsontableCellClasses.js'
 import { useAppStore } from './store/useAppStore.js'
@@ -84,7 +85,7 @@ export default function App() {
         console.warn('CSV parsing warnings:', data.errors)
       }
       if (!data.data?.length) {
-        showError('The CSV file appears to be empty or invalid.')
+        showError('The file appears to be empty or invalid.')
         setLoading(false)
         return
       }
@@ -96,8 +97,11 @@ export default function App() {
   const processFile = useCallback(
     (file) => {
       if (!file) return
-      if (!file.name.toLowerCase().endsWith('.csv')) {
-        showError('Please select a valid CSV file.')
+      const lower = file.name.toLowerCase()
+      const isCsv = lower.endsWith('.csv')
+      const isJson = lower.endsWith('.json')
+      if (!isCsv && !isJson) {
+        showError('Please select a .csv or .json file.')
         return
       }
       setLoading(true)
@@ -105,10 +109,11 @@ export default function App() {
       const reader = new FileReader()
       reader.onload = (e) => {
         try {
-          const data = parseCsvText(e.target.result)
+          const text = e.target.result
+          const data = isJson ? parseJsonTable(text) : parseCsvText(text)
           processParsedFile(file, data)
         } catch (err) {
-          showError(`Error processing CSV file: ${err.message}`)
+          showError(`Error processing file: ${err.message}`)
           setLoading(false)
         }
       }
@@ -374,7 +379,7 @@ export default function App() {
         open={closeConfirmOpen}
         title="Close this file?"
         message="Your table and saved workspace will be cleared."
-        detail="You can open or import a CSV again anytime."
+        detail="You can open or import a CSV or JSON file again anytime."
         confirmLabel="OK"
         cancelLabel="Cancel"
         onConfirm={confirmCloseWorkspace}
@@ -424,7 +429,7 @@ export default function App() {
               <div className="sheets-doc-meta">
                 {parsedData
                   ? `${rowCount.toLocaleString()} rows × ${colCount} columns · Local`
-                  : 'Local spreadsheet · Open a CSV to begin'}
+                  : 'Local spreadsheet · Open a CSV or JSON file to begin'}
               </div>
             </div>
           </div>
@@ -433,7 +438,7 @@ export default function App() {
               ref={fileInputRef}
               type="file"
               id="input-file"
-              accept=".csv"
+              accept=".csv,.json,application/json"
               hidden
               onChange={(e) => {
                 const file = e.target.files?.[0]
@@ -520,7 +525,7 @@ export default function App() {
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
             </div>
-            <h2>Drop a CSV to get started</h2>
+            <h2>Drop a CSV or JSON file to get started</h2>
             <p className="drop-lead">
               Or use <strong>Open</strong> — everything runs locally in your browser.
             </p>
@@ -539,7 +544,7 @@ export default function App() {
       {loading ? (
         <div id="loading" className="loading" style={{ display: 'flex' }}>
           <div className="spinner" />
-          <p>Loading CSV file...</p>
+          <p>Loading file...</p>
         </div>
       ) : null}
 
