@@ -9,6 +9,7 @@ import { SheetsMenuBar } from './components/SheetsMenuBar.jsx'
 import { DataToolbar } from './components/DataToolbar.jsx'
 import { UrlModal } from './components/UrlModal.jsx'
 import { ConfirmModal } from './components/ConfirmModal.jsx'
+import { IconClose } from './components/toolbarIcons.jsx'
 import { ChartAnalysisPanel } from './components/ChartAnalysisPanel.jsx'
 import { StatsPanel } from './components/StatsPanel.jsx'
 
@@ -447,12 +448,9 @@ export default function App() {
                 <line x1="10" y1="14" x2="21" y2="3" />
               </svg>
             </button>
-            <label htmlFor="input-file" className="sheets-btn sheets-btn--primary">
-              Open
-            </label>
             {parsedData ? (
-              <button type="button" className="sheets-btn sheets-btn--danger-outline" title="Close file" onClick={requestCloseWorkspace}>
-                Close
+              <button type="button" className="sheets-icon-btn" title="Close file" onClick={requestCloseWorkspace} aria-label="Close file">
+                <IconClose size={18} />
               </button>
             ) : null}
           </div>
