@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Handsontable from 'handsontable'
 import Papa from 'papaparse'
 import { parseCsvText } from './lib/csvParse.js'
@@ -8,6 +8,7 @@ import { useAppStore } from './store/useAppStore.js'
 import { SheetsMenuBar } from './components/SheetsMenuBar.jsx'
 import { DataToolbar } from './components/DataToolbar.jsx'
 import { UrlModal } from './components/UrlModal.jsx'
+import { ConfirmModal } from './components/ConfirmModal.jsx'
 import { ChartAnalysisPanel } from './components/ChartAnalysisPanel.jsx'
 import { StatsPanel } from './components/StatsPanel.jsx'
 
@@ -205,9 +206,15 @@ export default function App() {
     }
   }, [])
 
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false)
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key !== 'Escape') return
+      if (closeConfirmOpen) {
+        setCloseConfirmOpen(false)
+        return
+      }
       const s = useAppStore.getState()
       if (s.urlModalOpen) s.closeUrlModal()
       else if (s.statsOpen) s.setStatsOpen(false)
@@ -215,7 +222,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [closeConfirmOpen])
 
   useEffect(() => {
     const onKey = (e) => {
@@ -333,7 +340,7 @@ export default function App() {
     }, 250)
   }
 
-  const clearWorkspace = useCallback(() => {
+  const performClearWorkspace = useCallback(() => {
     if (hotRef.current) {
       hotRef.current.destroy()
       hotRef.current = null
@@ -345,9 +352,33 @@ export default function App() {
     clearWorkspaceState()
   }, [clearWorkspaceState])
 
+  const requestCloseWorkspace = useCallback(() => {
+    setCloseConfirmOpen(true)
+  }, [])
+
+  const confirmCloseWorkspace = useCallback(() => {
+    setCloseConfirmOpen(false)
+    performClearWorkspace()
+  }, [performClearWorkspace])
+
+  const cancelCloseWorkspace = useCallback(() => {
+    setCloseConfirmOpen(false)
+  }, [])
+
   return (
     <div className="app-container">
       <NoticeToast />
+
+      <ConfirmModal
+        open={closeConfirmOpen}
+        title="Close this file?"
+        message="Your table and saved workspace will be cleared."
+        detail="You can open or import a CSV again anytime."
+        confirmLabel="OK"
+        cancelLabel="Cancel"
+        onConfirm={confirmCloseWorkspace}
+        onCancel={cancelCloseWorkspace}
+      />
 
       <header className="sheets-chrome" role="banner">
         <div className="sheets-titlebar">
@@ -420,7 +451,7 @@ export default function App() {
               Open
             </label>
             {parsedData ? (
-              <button type="button" className="sheets-btn sheets-btn--danger-outline" title="Close file" onClick={clearWorkspace}>
+              <button type="button" className="sheets-btn sheets-btn--danger-outline" title="Close file" onClick={requestCloseWorkspace}>
                 Close
               </button>
             ) : null}

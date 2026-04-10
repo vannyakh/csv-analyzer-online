@@ -1401,6 +1401,47 @@ body {
   margin-top: 8px;
 }
 
+/* In-app confirm dialog (replaces window.confirm) */
+.confirm-modal {
+  z-index: 1150;
+}
+
+.confirm-modal__content {
+  max-width: 420px;
+}
+
+.confirm-modal__header {
+  padding: 18px 22px;
+}
+
+.confirm-modal__header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.confirm-modal__desc {
+  margin-bottom: 4px;
+}
+
+.confirm-modal__message {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.confirm-modal__detail {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+.confirm-modal__actions {
+  margin-top: 20px;
+}
+
 .btn-ghost {
   padding: 10px 16px;
   border-radius: var(--radius-sm);
