@@ -1,4 +1,5 @@
-import { useAppStore } from '../store/useAppStore.js'
+import { useMemo } from 'react'
+import { useAppStore } from '@/store/useAppStore.js'
 
 function StatNumbers({ numericData }) {
   const sorted = [...numericData].sort((a, b) => a - b)
@@ -28,20 +29,18 @@ function StatNumbers({ numericData }) {
   )
 }
 
-function StatsGrid({ data, headers }) {
+function StatsGrid({ stats }) {
   return (
     <div className="stats-grid">
-      {headers.map((header) => {
-        const columnData = data.map((row) => row[header]).filter((val) => val !== null && val !== undefined && val !== '')
-        const numericData = columnData.map((val) => parseFloat(val)).filter((val) => !Number.isNaN(val))
+      {stats.map(({ header, columnDataLength, emptyCount, numericData, uniqueCount }) => {
         return (
           <div key={header} className="stat-card">
             <h4>{header}</h4>
             <div className="stat-item">
-              <strong>Total:</strong> {columnData.length}
+              <strong>Total:</strong> {columnDataLength}
             </div>
             <div className="stat-item">
-              <strong>Empty:</strong> {data.length - columnData.length}
+              <strong>Empty:</strong> {emptyCount}
             </div>
             {numericData.length > 0 ? (
               <>
@@ -52,7 +51,7 @@ function StatsGrid({ data, headers }) {
               </>
             ) : (
               <div className="stat-item">
-                <strong>Unique:</strong> {new Set(columnData).size}
+                <strong>Unique:</strong> {uniqueCount}
               </div>
             )}
           </div>
@@ -67,7 +66,26 @@ export function StatsPanel() {
   const statsOpen = useAppStore((s) => s.statsOpen)
   const setStatsOpen = useAppStore((s) => s.setStatsOpen)
 
-  const headers = parsedData ? parsedData.meta.fields || Object.keys(parsedData.data[0] || {}) : []
+  const headers = useMemo(
+    () => (parsedData ? parsedData.meta.fields || Object.keys(parsedData.data[0] || {}) : []),
+    [parsedData],
+  )
+
+  const stats = useMemo(() => {
+    if (!parsedData) return []
+    const data = parsedData.data
+    return headers.map((header) => {
+      const columnData = data.map((row) => row[header]).filter((val) => val !== null && val !== undefined && val !== '')
+      const numericData = columnData.map((val) => parseFloat(val)).filter((val) => !Number.isNaN(val))
+      return {
+        header,
+        columnDataLength: columnData.length,
+        emptyCount: data.length - columnData.length,
+        numericData,
+        uniqueCount: new Set(columnData).size,
+      }
+    })
+  }, [headers, parsedData])
 
   return (
     <>
@@ -89,7 +107,7 @@ export function StatsPanel() {
           </button>
         </div>
         <div id="stats-content" className="stats-content">
-          {parsedData ? <StatsGrid data={parsedData.data} headers={headers} /> : null}
+          {parsedData ? <StatsGrid stats={stats} /> : null}
         </div>
       </div>
     </>

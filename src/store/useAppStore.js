@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { suggestChartColumns } from '../lib/suggestChartColumns.js'
+import { suggestChartColumns } from '@/lib/suggestChartColumns.js'
 
 const WORKSPACE_STORAGE_KEY = 'csv-analyzer-workspace'
 

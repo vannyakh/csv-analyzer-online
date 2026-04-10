@@ -1,18 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import Handsontable from 'handsontable'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Papa from 'papaparse'
-import { parseCsvText } from './lib/csvParse.js'
-import { parseJsonTable } from './lib/jsonTableParse.js'
-import { applyHandsontableSearch } from './lib/handsontableSearch.js'
-import { handsontableCells } from './lib/handsontableCellClasses.js'
-import { useAppStore } from './store/useAppStore.js'
-import { SheetsMenuBar } from './components/SheetsMenuBar.jsx'
-import { DataToolbar } from './components/DataToolbar.jsx'
-import { UrlModal } from './components/UrlModal.jsx'
-import { ConfirmModal } from './components/ConfirmModal.jsx'
-import { IconClose } from './components/toolbarIcons.jsx'
-import { ChartAnalysisPanel } from './components/ChartAnalysisPanel.jsx'
-import { StatsPanel } from './components/StatsPanel.jsx'
+import { parseCsvText } from '@/lib/csvParse.js'
+import { parseJsonTable } from '@/lib/jsonTableParse.js'
+import { applyHandsontableSearch } from '@/lib/handsontableSearch.js'
+import { handsontableCells } from '@/lib/handsontableCellClasses.js'
+import { useAppStore } from '@/store/useAppStore.js'
+import { SheetsMenuBar } from '@/components/SheetsMenuBar.jsx'
+import { ConfirmModal } from '@/components/ConfirmModal.jsx'
+import { IconClose } from '@/components/toolbarIcons.jsx'
+
+const UrlModal = lazy(() => import('@/components/UrlModal.jsx').then((m) => ({ default: m.UrlModal })))
+const StatsPanel = lazy(() => import('@/components/StatsPanel.jsx').then((m) => ({ default: m.StatsPanel })))
+const ChartAnalysisPanel = lazy(() =>
+  import('@/components/ChartAnalysisPanel.jsx').then((m) => ({ default: m.ChartAnalysisPanel })),
+)
 
 const ENABLE_ADS = false
 
@@ -52,6 +53,7 @@ export default function App() {
   const searchInputRef = useRef(null)
   const hotContainerRef = useRef(null)
   const hotRef = useRef(null)
+  const handsontableRef = useRef(null)
   const chartDomRef = useRef(null)
   const chartInstanceRef = useRef(null)
 
@@ -144,48 +146,64 @@ export default function App() {
     el.innerHTML = ''
     el.className = 'table-container'
 
+    let cancelled = false
     let syncTimer = null
-    const hot = new Handsontable(el, {
-      data: parsedData.data,
-      rowHeaders: true,
-      colHeaders: parsedData.meta.fields || Object.keys(parsedData.data[0] || {}),
-      columnSorting: true,
-      width: '100%',
-      height: '100%',
-      licenseKey: 'non-commercial-and-evaluation',
-      className: 'ht-theme-analyzer',
-      stretchH: 'all',
-      autoWrapRow: true,
-      autoWrapCol: true,
-      contextMenu: true,
-      filters: true,
-      dropdownMenu: true,
-      manualColumnResize: true,
-      manualRowResize: true,
-      readOnly: false,
-      search: true,
-      cells: handsontableCells,
-      afterChange: (changes, source) => {
-        if (!changes || source === 'loadData') return
-        clearTimeout(syncTimer)
-        syncTimer = setTimeout(() => {
-          const h = hotRef.current
-          if (!h) return
-          const prev = useAppStore.getState().parsedData
-          if (!prev) return
-          const data = h.getSourceData()
-          useAppStore.setState({
-            parsedData: { ...prev, data },
-          })
-        }, 400)
-      },
-    })
-    hotRef.current = hot
+
+    const createTable = async () => {
+      if (!handsontableRef.current) {
+        const mod = await import('handsontable')
+        handsontableRef.current = mod.default ?? mod
+      }
+      if (cancelled) return
+
+      const Handsontable = handsontableRef.current
+      const hot = new Handsontable(el, {
+        data: parsedData.data,
+        rowHeaders: true,
+        colHeaders: parsedData.meta.fields || Object.keys(parsedData.data[0] || {}),
+        columnSorting: true,
+        width: '100%',
+        height: '100%',
+        licenseKey: 'non-commercial-and-evaluation',
+        className: 'ht-theme-analyzer',
+        stretchH: 'all',
+        autoWrapRow: true,
+        autoWrapCol: true,
+        contextMenu: true,
+        filters: true,
+        dropdownMenu: true,
+        manualColumnResize: true,
+        manualRowResize: true,
+        readOnly: false,
+        search: true,
+        cells: handsontableCells,
+        afterChange: (changes, source) => {
+          if (!changes || source === 'loadData') return
+          clearTimeout(syncTimer)
+          syncTimer = setTimeout(() => {
+            const h = hotRef.current
+            if (!h) return
+            const prev = useAppStore.getState().parsedData
+            if (!prev) return
+            const data = h.getSourceData()
+            useAppStore.setState({
+              parsedData: { ...prev, data },
+            })
+          }, 400)
+        },
+      })
+      hotRef.current = hot
+    }
+
+    createTable()
 
     return () => {
+      cancelled = true
       clearTimeout(syncTimer)
-      hot.destroy()
-      if (hotRef.current === hot) hotRef.current = null
+      if (hotRef.current) {
+        hotRef.current.destroy()
+        hotRef.current = null
+      }
     }
   }, [parsedData])
 
@@ -256,7 +274,10 @@ export default function App() {
     }
   }, [])
 
-  const headers = parsedData ? parsedData.meta.fields || Object.keys(parsedData.data[0] || {}) : []
+  const headers = useMemo(
+    () => (parsedData ? parsedData.meta.fields || Object.keys(parsedData.data[0] || {}) : []),
+    [parsedData],
+  )
   const rowCount = parsedData?.data?.length ?? 0
   const colCount = headers.length
 
@@ -575,11 +596,17 @@ export default function App() {
         {parsedData ? <div ref={hotContainerRef} id="handsontable-container" className="table-container" /> : null}
       </div>
 
-      <UrlModal />
+      <Suspense fallback={null}>
+        <UrlModal />
+      </Suspense>
 
-      <StatsPanel />
+      <Suspense fallback={null}>
+        <StatsPanel />
+      </Suspense>
 
-      <ChartAnalysisPanel hotRef={hotRef} chartDomRef={chartDomRef} chartInstanceRef={chartInstanceRef} />
+      <Suspense fallback={null}>
+        <ChartAnalysisPanel hotRef={hotRef} chartDomRef={chartDomRef} chartInstanceRef={chartInstanceRef} />
+      </Suspense>
 
       {ENABLE_ADS ? (
         <div className="ads-container ads-bottom" style={{ display: 'flex' }}>

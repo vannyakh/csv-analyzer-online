@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { parseCsvText } from '../lib/csvParse.js'
-import { parseJsonTable } from '../lib/jsonTableParse.js'
-import { getRecentUrls, rememberUrl } from '../lib/recentUrls.js'
-import { useAppStore } from '../store/useAppStore.js'
+import { parseCsvText } from '@/lib/csvParse.js'
+import { parseJsonTable } from '@/lib/jsonTableParse.js'
+import { getRecentUrls, rememberUrl } from '@/lib/recentUrls.js'
+import { useAppStore } from '@/store/useAppStore.js'
 
 export function UrlModal() {
   const urlFieldRef = useRef(null)

@@ -1,7 +1,6 @@
-import { useEffect } from 'react'
-import * as echarts from 'echarts'
-import { buildEChartsOption } from '../lib/chartConfig.js'
-import { useAppStore } from '../store/useAppStore.js'
+import { useEffect, useRef } from 'react'
+import { buildEChartsOption } from '@/lib/chartConfig.js'
+import { useAppStore } from '@/store/useAppStore.js'
 
 /**
  * @param {{
@@ -11,6 +10,7 @@ import { useAppStore } from '../store/useAppStore.js'
  * }} props
  */
 export function ChartAnalysisPanel({ hotRef, chartDomRef, chartInstanceRef }) {
+  const echartsRef = useRef(null)
   const parsedData = useAppStore((s) => s.parsedData)
   const chartOpen = useAppStore((s) => s.chartOpen)
   const setChartOpen = useAppStore((s) => s.setChartOpen)
@@ -48,7 +48,7 @@ export function ChartAnalysisPanel({ hotRef, chartDomRef, chartInstanceRef }) {
     return () => ro.disconnect()
   }, [chartGenerated, chartOpen, chartDomRef, chartInstanceRef])
 
-  const handleGenerateChart = () => {
+  const handleGenerateChart = async () => {
     if (!parsedData || !hotRef.current) {
       showError('Please load a data file first.')
       return
@@ -74,7 +74,12 @@ export function ChartAnalysisPanel({ hotRef, chartDomRef, chartInstanceRef }) {
     })
     if (!option) return
 
-    const chart = echarts.init(dom, null, { renderer: 'canvas' })
+    if (!echartsRef.current) {
+      const echartsModule = await import('echarts')
+      echartsRef.current = echartsModule
+    }
+
+    const chart = echartsRef.current.init(dom, null, { renderer: 'canvas' })
     chart.setOption(option, true)
     chartInstanceRef.current = chart
     setChartGenerated(true)
