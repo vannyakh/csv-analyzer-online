@@ -1052,31 +1052,135 @@ body {
   background-color: #f0f4ff !important;
 }
 
-/* Column headers (Handsontable uses .ht_clone_top for the header row) */
+/* Column headers — flat, spacious “clean UI” (Handsontable uses .ht_clone_top for the header row) */
 #handsontable-container .handsontable .ht_clone_top thead th,
 #handsontable-container .handsontable .ht_master thead th {
-  background: linear-gradient(180deg, #f5f7fb 0%, #e8ecf6 100%) !important;
-  font-weight: 700 !important;
-  font-size: 11px !important;
-  letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
-  color: #3d4663 !important;
-  padding: 12px 14px !important;
-  border-bottom: 2px solid #d0d8ea !important;
+  background: #fafbfc !important;
+  background-image: none !important;
+  font-weight: 600 !important;
+  font-size: 12.5px !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+  color: #475569 !important;
+  padding: 0 !important;
+  border-left: none !important;
+  border-right: 1px solid #f1f5f9 !important;
+  border-top: none !important;
+  border-bottom: 1px solid #e8ecf1 !important;
+  box-shadow: none !important;
 }
 
-#handsontable-container .handsontable .ht_clone_top span.colHeader {
-  line-height: 1.35 !important;
+#handsontable-container .handsontable .ht_clone_top thead th:last-child,
+#handsontable-container .handsontable .ht_master thead th:last-child {
+  border-right: none !important;
 }
 
-/* Row headers (#) */
+#handsontable-container .handsontable thead th .relative {
+  padding: 14px 16px !important;
+  min-height: 44px;
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#handsontable-container .handsontable thead th .relative span.colHeader {
+  flex: 1 1 auto;
+  order: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+#handsontable-container .handsontable .ht_clone_top span.colHeader,
+#handsontable-container .handsontable .ht_master span.colHeader {
+  line-height: 1.4 !important;
+}
+
+#handsontable-container .handsontable thead th.ht__highlight,
+#handsontable-container .handsontable thead th.ht__active_highlight {
+  background: #f1f5f9 !important;
+}
+
+#handsontable-container .handsontable thead th.active {
+  background: #e8eef4 !important;
+}
+
+/* Dropdown / filter control — minimal chevron, no heavy box */
+#handsontable-container .handsontable button.changeType {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #94a3b8 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  padding: 6px !important;
+  margin: 0 !important;
+  margin-left: auto !important;
+  float: none !important;
+  flex-shrink: 0;
+  order: 2;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  box-shadow: none !important;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+#handsontable-container .handsontable button.changeType::before {
+  content: '' !important;
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  opacity: 0.85;
+}
+
+#handsontable-container .handsontable button.changeType:hover {
+  background: #f1f5f9 !important;
+  border: none !important;
+  color: #64748b !important;
+  cursor: pointer;
+}
+
+#handsontable-container .handsontable .htFiltersActive button.changeType {
+  background: #ecfdf5 !important;
+  color: #0d9488 !important;
+  border: none !important;
+}
+
+#handsontable-container .handsontable .htFiltersActive button.changeType:hover {
+  background: #d1fae5 !important;
+  color: #0f766e !important;
+}
+
+[dir='rtl'] #handsontable-container .handsontable button.changeType {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  float: none !important;
+}
+
+[dir='rtl'] #handsontable-container .handsontable thead th .relative span.colHeader {
+  text-align: right;
+}
+
+/* Row headers (#) + corner — align with header strip */
 #handsontable-container .handsontable .ht_clone_inline_start td,
 #handsontable-container .handsontable .ht_clone_top_inline_start_corner th {
-  background: #f0f2f7 !important;
-  color: #6b7289 !important;
+  background: #fafbfc !important;
+  color: #64748b !important;
   font-weight: 600 !important;
   font-size: 12px !important;
   text-align: center !important;
+  border-bottom: 1px solid #e8ecf1 !important;
+  border-right: 1px solid #f1f5f9 !important;
 }
 
 /* Typed cell content */

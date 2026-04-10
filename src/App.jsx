@@ -137,6 +137,7 @@ export default function App() {
     el.innerHTML = ''
     el.className = 'table-container'
 
+    let syncTimer = null
     const hot = new Handsontable(el, {
       data: parsedData.data,
       rowHeaders: true,
@@ -157,10 +158,25 @@ export default function App() {
       readOnly: false,
       search: true,
       cells: handsontableCells,
+      afterChange: (changes, source) => {
+        if (!changes || source === 'loadData') return
+        clearTimeout(syncTimer)
+        syncTimer = setTimeout(() => {
+          const h = hotRef.current
+          if (!h) return
+          const prev = useAppStore.getState().parsedData
+          if (!prev) return
+          const data = h.getSourceData()
+          useAppStore.setState({
+            parsedData: { ...prev, data },
+          })
+        }, 400)
+      },
     })
     hotRef.current = hot
 
     return () => {
+      clearTimeout(syncTimer)
       hot.destroy()
       if (hotRef.current === hot) hotRef.current = null
     }
@@ -231,6 +247,12 @@ export default function App() {
   const rowCount = parsedData?.data?.length ?? 0
   const colCount = headers.length
 
+  const exportBaseName = () => {
+    const { currentFile, displayName } = useAppStore.getState()
+    const raw = (currentFile?.name || displayName || 'export').replace(/\.csv$/i, '')
+    return raw || 'export'
+  }
+
   const handleExportCsv = () => {
     const hot = hotRef.current
     if (!hot) return
@@ -241,8 +263,7 @@ export default function App() {
     const a = document.createElement('a')
     const url = URL.createObjectURL(blob)
     a.href = url
-    const cf = useAppStore.getState().currentFile
-    a.download = `${cf ? cf.name.replace(/\.csv$/i, '') : 'export'}_export.csv`
+    a.download = `${exportBaseName()}_export.csv`
     a.click()
     URL.revokeObjectURL(url)
     setNotice({ type: 'success', text: 'CSV download started — check your downloads folder.' })
@@ -265,8 +286,7 @@ export default function App() {
     const a = document.createElement('a')
     const url = URL.createObjectURL(blob)
     a.href = url
-    const cf = useAppStore.getState().currentFile
-    a.download = `${cf ? cf.name.replace(/\.csv$/i, '') : 'export'}_export.json`
+    a.download = `${exportBaseName()}_export.json`
     a.click()
     URL.revokeObjectURL(url)
     setNotice({ type: 'success', text: 'JSON download started — check your downloads folder.' })
@@ -291,8 +311,8 @@ export default function App() {
     if (!hot) return
     const data = hot.getData()
     const hdrs = hot.getColHeader()
-    const cf = useAppStore.getState().currentFile
-    const title = cf ? cf.name : 'CSV Data'
+    const { currentFile, displayName } = useAppStore.getState()
+    const title = currentFile?.name || displayName || 'CSV Data'
     const printWindow = window.open('', '_blank')
     const rowsHtml = data
       .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell ?? '')}</td>`).join('')}</tr>`)

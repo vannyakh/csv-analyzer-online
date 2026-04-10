@@ -1,5 +1,20 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { suggestChartColumns } from '../lib/suggestChartColumns.js'
+
+const WORKSPACE_STORAGE_KEY = 'csv-analyzer-workspace'
+
+const workspaceStorage = createJSONStorage(() => ({
+  getItem: (name) => localStorage.getItem(name),
+  setItem: (name, value) => {
+    try {
+      localStorage.setItem(name, value)
+    } catch {
+      /* quota exceeded or storage disabled */
+    }
+  },
+  removeItem: (name) => localStorage.removeItem(name),
+}))
 
 const initialChartState = () => ({
   chartType: 'line',
@@ -9,7 +24,9 @@ const initialChartState = () => ({
   chartGenerated: false,
 })
 
-export const useAppStore = create((set, get) => ({
+export const useAppStore = create(
+  persist(
+    (set, get) => ({
   parsedData: null,
   currentFile: null,
   displayName: '',
@@ -153,4 +170,22 @@ export const useAppStore = create((set, get) => ({
       yAxis: state.yAxis || s.y,
     }))
   },
-}))
+}),
+    {
+      name: WORKSPACE_STORAGE_KEY,
+      storage: workspaceStorage,
+      partialize: (s) => ({
+        parsedData: s.parsedData,
+        displayName: s.displayName,
+        searchQuery: s.searchQuery,
+        statsOpen: s.statsOpen,
+        chartOpen: s.chartOpen,
+        chartType: s.chartType,
+        xAxis: s.xAxis,
+        yAxis: s.yAxis,
+        extraSeries: s.extraSeries,
+        chartGenerated: s.chartGenerated,
+      }),
+    },
+  ),
+)
