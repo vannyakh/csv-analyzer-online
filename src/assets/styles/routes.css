@@ -7,18 +7,27 @@
   font-family: var(--font-sans);
 }
 
+.route-stack {
+  width: min(720px, 100%);
+}
+
 .route-shell--error .route-card__code {
   color: #b91c1c;
 }
 
 .route-card {
   width: min(420px, 100%);
+  margin: 0 auto;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
   padding: 32px 28px;
   text-align: center;
+}
+
+.route-ad {
+  margin-top: 20px;
 }
 
 .route-card__code {
