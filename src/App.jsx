@@ -9,13 +9,14 @@ import { useAppStore } from '@/store/useAppStore.js'
 import { SheetsMenuBar } from '@/components/SheetsMenuBar.jsx'
 import { ConfirmModal } from '@/components/ConfirmModal.jsx'
 import { IconClose } from '@/components/toolbarIcons.jsx'
-import { AdUnit } from '@/components/AdUnit.jsx'
 
 const UrlModal = lazy(() => import('@/components/UrlModal.jsx').then((m) => ({ default: m.UrlModal })))
 const StatsPanel = lazy(() => import('@/components/StatsPanel.jsx').then((m) => ({ default: m.StatsPanel })))
 const ChartAnalysisPanel = lazy(() =>
   import('@/components/ChartAnalysisPanel.jsx').then((m) => ({ default: m.ChartAnalysisPanel })),
 )
+
+const ENABLE_ADS = false
 
 const base = import.meta.env.BASE_URL
 
@@ -261,6 +262,19 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  useEffect(() => {
+    if (!ENABLE_ADS) return
+    const containers = document.querySelectorAll('.ads-container')
+    containers.forEach((c) => {
+      c.style.display = 'flex'
+    })
+    try {
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
   const headers = useMemo(
     () => (parsedData ? parsedData.meta.fields || Object.keys(parsedData.data[0] || {}) : []),
     [parsedData],
@@ -482,7 +496,20 @@ export default function App() {
         />
       </header>
 
-      <AdUnit className="ads-top" />
+      {ENABLE_ADS ? (
+        <>
+          <div className="ads-container ads-top" style={{ display: 'flex' }}>
+            <ins
+              className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9402558370681469"
+              data-ad-slot="3423641218"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
+        </>
+      ) : null}
 
       {!parsedData && !loading ? (
         <div
@@ -552,7 +579,18 @@ export default function App() {
         </div>
       ) : null}
 
-      <AdUnit className="ads-in-content" />
+      {ENABLE_ADS ? (
+        <div className="ads-container ads-in-content" style={{ display: 'flex' }}>
+          <ins
+            className="adsbygoogle"
+            style={{ display: 'block' }}
+            data-ad-client="ca-pub-9402558370681469"
+            data-ad-slot="3423641218"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
+        </div>
+      ) : null}
 
       <div className={`main-stage ${parsedData ? 'main-stage--table' : ''}`}>
         {loading && parsedData ? <div className="loading-overlay" aria-busy="true" aria-label="Loading" /> : null}
@@ -571,7 +609,18 @@ export default function App() {
         <ChartAnalysisPanel hotRef={hotRef} chartDomRef={chartDomRef} chartInstanceRef={chartInstanceRef} />
       </Suspense>
 
-      <AdUnit className="ads-bottom" />
+      {ENABLE_ADS ? (
+        <div className="ads-container ads-bottom" style={{ display: 'flex' }}>
+          <ins
+            className="adsbygoogle"
+            style={{ display: 'block' }}
+            data-ad-client="ca-pub-9402558370681469"
+            data-ad-slot="3423641218"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

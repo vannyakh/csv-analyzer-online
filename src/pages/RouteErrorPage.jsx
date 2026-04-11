@@ -1,6 +1,5 @@
 import { isRouteErrorResponse, useRouteError, Link } from 'react-router-dom'
 import '@/assets/styles/routes.css'
-import { AdUnit } from '@/components/AdUnit.jsx'
 
 export function RouteErrorPage() {
   const error = useRouteError()
@@ -27,25 +26,22 @@ export function RouteErrorPage() {
 
   return (
     <div className="route-shell route-shell--error">
-      <div className="route-stack">
-        <div className="route-card">
-          {code != null ? (
-            <p className="route-card__code" aria-hidden>
-              {code}
-            </p>
-          ) : null}
-          <h1 className="route-card__title">{title}</h1>
-          <p className="route-card__text">{message}</p>
-          <div className="route-card__actions">
-            <Link to="/" className="route-card__btn">
-              Back to CSV Analyzer
-            </Link>
-            <button type="button" className="route-card__btn route-card__btn--ghost" onClick={() => window.location.reload()}>
-              Reload page
-            </button>
-          </div>
+      <div className="route-card">
+        {code != null ? (
+          <p className="route-card__code" aria-hidden>
+            {code}
+          </p>
+        ) : null}
+        <h1 className="route-card__title">{title}</h1>
+        <p className="route-card__text">{message}</p>
+        <div className="route-card__actions">
+          <Link to="/" className="route-card__btn">
+            Back to CSV Analyzer
+          </Link>
+          <button type="button" className="route-card__btn route-card__btn--ghost" onClick={() => window.location.reload()}>
+            Reload page
+          </button>
         </div>
-        <AdUnit className="route-ad" />
       </div>
     </div>
   )
